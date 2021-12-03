@@ -16,10 +16,24 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+       
     }
 
     @IBAction func SignIn(_ sender: Any) {
-        performSegue(withIdentifier: "toFeedVC", sender: nil)
+        if eMail.text != "" && password.text != "" {
+            Auth.auth().signIn(withEmail: eMail.text!, password: password.text!) { authData, error in
+                if error != nil{
+                    self.Alert(title: "Hata!", message: error!.localizedDescription)
+                }
+                else {
+                    self.performSegue(withIdentifier: "toFeedVC", sender: nil)
+                }
+            }
+        }
+        else {
+            Alert(title: "Hata!", message: "Kullanıcı adı veya şifrenizi eksik girdiniz.")
+        }
     }
     @IBAction func SignUp(_ sender: Any) {
         if eMail.text != "" && password.text != "" {
