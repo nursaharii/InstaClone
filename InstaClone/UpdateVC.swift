@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseStorage
 
 class UpdateVC: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate  {
 
     @IBOutlet weak var uploadBtn: UIButton!
     @IBOutlet weak var aciklama: UITextField!
     @IBOutlet weak var img: UIImageView!
+    let storage = Storage.storage()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,8 +42,36 @@ class UpdateVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
     @objc func hideKeyboard(){
         view.endEditing(true)
     }
+    func Alert(title: String, message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        let okBtn = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+        alert.addAction(okBtn)
+        self.present(alert, animated: true, completion: nil)
+    }
 
     @IBAction func upload(_ sender: Any) {
+        
+        let storageRef = storage.reference()
+        let folderRef = storageRef.child("media")
+        let folderDescrpRef = storageRef.child("description")
+        
+        if let data = img.image?.jpegData(compressionQuality: 0.5) {
+            let uuid = UUID().uuidString
+            let imgRef = folderRef.child("\(uuid).jpeg")
+            imgRef.putData(data, metadata: nil) { metadata, error in
+                if error != nil {
+                    self.Alert(title: "Error", message: error!.localizedDescription)
+                }
+                else {
+                    imgRef.downloadURL { url, error in
+                        if error == nil {
+                            let imgUrl = url?.absoluteString
+                            //print(imgUrl)
+                        }
+                    }
+                }
+            }
+        }
         
     }
     
