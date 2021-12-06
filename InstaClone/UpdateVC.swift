@@ -25,6 +25,8 @@ class UpdateVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
         img.isUserInteractionEnabled = true
         let imgTap = UITapGestureRecognizer(target: self, action: #selector(addImg))
         img.addGestureRecognizer(imgTap)
+        
+        
     }
     @objc func addImg(){
         let picker = UIImagePickerController()
@@ -66,13 +68,29 @@ class UpdateVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
                     imgRef.downloadURL { url, error in
                         if error == nil {
                             let imgUrl = url?.absoluteString
-                            //print(imgUrl)
+                            // DATABASE (FIRESTORE)
+                            
+                            
+                            let firestoreDb = Firestore.firestore()
+                            var firestoreRef : DocumentReference? = nil
+                            let firestorePost = ["imgUrl": imgUrl,"postedBy" : Auth.auth().currentUser!.email!, "postComment" : self.aciklama.text!,"date" : FieldValue.serverTimestamp(), "likes" : 0] as [String : Any]
+                            firestoreRef = firestoreDb.collection("Posts").addDocument(data: firestorePost, completion: { error in
+                                if error != nil {
+                                    self.Alert(title: "Error", message: error!.localizedDescription)
+                                }
+                                else {
+                                    self.img.image = UIImage(systemName: "square.and.arrow.up.fill")
+                                    self.aciklama.text = ""
+                                    self.tabBarController?.selectedIndex = 0
+                                }
+                            })
                         }
                     }
                 }
             }
         }
         
+
     }
     
 }
