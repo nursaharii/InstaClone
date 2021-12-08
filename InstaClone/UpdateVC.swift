@@ -27,6 +27,7 @@ class UpdateVC: UIViewController, UIImagePickerControllerDelegate, UINavigationC
         img.addGestureRecognizer(imgTap)
         
         
+        
     }
     @objc func addImg(){
         let picker = UIImagePickerController()
